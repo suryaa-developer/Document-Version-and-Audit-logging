@@ -20,7 +20,9 @@ public class UserController {
                 user.getEmail(),
                 user.getName(),
                 user.getPictureUrl(),
-                user.getProvider()
+                user.getProvider(),
+                user.getStatus()
+
         );
     }
 }
