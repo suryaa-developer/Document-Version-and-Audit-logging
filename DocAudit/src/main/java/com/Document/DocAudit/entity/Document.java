@@ -13,7 +13,7 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    private String Title;
+    private String title;
     @Lob
     private String Content;
     @ManyToOne(fetch = FetchType.LAZY)
