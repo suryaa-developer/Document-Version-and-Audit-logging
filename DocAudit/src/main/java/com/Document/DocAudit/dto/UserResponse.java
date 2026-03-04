@@ -16,4 +16,5 @@ public class UserResponse {
     private String pictureUrl;
     private String provider;
     private UserStatus status;
+    private String token;
 }
