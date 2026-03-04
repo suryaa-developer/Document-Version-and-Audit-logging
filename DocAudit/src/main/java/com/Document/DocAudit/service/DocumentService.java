@@ -22,8 +22,12 @@ public class DocumentService {
     @Autowired
     private UserRepository userRepository;
 
+    @Transactional
     public Document CreateDocument(String title,String Content){
+        System.out.println("Attempting to create document: " + title+" content: " + Content);
+
        String currentUser = SecurityConfig.GetCurrentUser();
+        System.err.println("currentUser:"+currentUser);
        if(currentUser == null){
            throw new IllegalArgumentException("You need to be logged in first");
        }
@@ -31,7 +35,9 @@ public class DocumentService {
            throw new IllegalArgumentException("Please Enter All Fields");
        }
 
-        UserEntity creator = userRepository.findByname(currentUser).orElseThrow(() -> new RuntimeException("User not found"));
+        // Change findByname to findByEmail
+        UserEntity creator = userRepository.findByProviderId(currentUser)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + currentUser));
 
        Document newDoc = new Document();
        newDoc.setTitle(title);
@@ -72,7 +78,8 @@ public class DocumentService {
         }
     }
 
-    private void DeleteDocument(Long id) {
+    @Transactional
+    public void DeleteDocument(Long id) {
         Document doc = documentRepository.findById(id).
                 orElseThrow(()->new EntityNotFoundException("Document not found"));
         doc.setStatus(DocumentStatus.DELETED);
