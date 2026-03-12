@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/document")
 public class DocumentController {
@@ -38,6 +41,19 @@ public class DocumentController {
         docService.DeleteDocument(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/active")
+    public ResponseEntity<List<Document>> GetAllDocument(){
+        List<Document> doc =  docService.getActiveDocuments();
+        return ResponseEntity.ok(doc);
+    }
+
+    @GetMapping("/active/{id}")
+    public ResponseEntity<Document> GetActiveDocumentById(@PathVariable Long id){
+
+        return docService.getActiveDocumentById(id)
+                .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
 
     private DocumentResponse ConvertToResponse(Document doc){
         return  new DocumentResponse(
