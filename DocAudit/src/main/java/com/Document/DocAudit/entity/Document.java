@@ -21,5 +21,5 @@ public class Document {
     private UserEntity CreatedBy;
     private LocalDateTime CreatedAt;
     private LocalDateTime UpdatedAt;
-    private DocumentStatus Status;
+    private DocumentStatus status;
 }
