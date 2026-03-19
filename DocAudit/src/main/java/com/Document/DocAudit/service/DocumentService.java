@@ -9,6 +9,9 @@ import com.Document.DocAudit.repository.UserRepository;
 import com.Document.DocAudit.securityConfig.SecurityConfig;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -106,8 +109,9 @@ public class DocumentService {
     }
 
     // Get all active documents
-    public List<Document> getActiveDocuments() {
-        return documentRepository.findByStatus(DocumentStatus.ACTIVE);
+    public Page<Document> getActiveDocuments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return documentRepository.findByStatus(DocumentStatus.ACTIVE,pageable);
     }
 
     // Get active document by ID
