@@ -6,12 +6,10 @@ import com.Document.DocAudit.entity.Document;
 import com.Document.DocAudit.service.DocumentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/document")
@@ -41,11 +39,11 @@ public class DocumentController {
         docService.DeleteDocument(id);
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/active")
-    public ResponseEntity<List<Document>> GetAllDocument(){
-        List<Document> doc =  docService.getActiveDocuments();
-        return ResponseEntity.ok(doc);
-    }
+        @GetMapping("/active")
+        public ResponseEntity<Page<Document>> GetAllDocument(@RequestParam int page,@RequestParam int size){
+            Page<Document> doc =  docService.getActiveDocuments(page, size);
+            return ResponseEntity.ok(doc);
+        }
 
     @GetMapping("/active/{id}")
     public ResponseEntity<Document> GetActiveDocumentById(@PathVariable Long id){
