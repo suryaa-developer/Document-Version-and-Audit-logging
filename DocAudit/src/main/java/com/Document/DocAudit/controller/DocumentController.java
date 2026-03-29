@@ -1,5 +1,6 @@
 package com.Document.DocAudit.controller;
 
+import com.Document.DocAudit.dto.ApiResponse;
 import com.Document.DocAudit.dto.DocumentRequest;
 import com.Document.DocAudit.dto.DocumentResponse;
 import com.Document.DocAudit.entity.Document;
@@ -19,19 +20,23 @@ public class DocumentController {
     private DocumentService docService;
 
     @PostMapping("/create")
-    public ResponseEntity<DocumentResponse> createDocument(@RequestBody DocumentRequest docRequest){
+    public ResponseEntity<ApiResponse<DocumentResponse>> createDocument(@Valid @RequestBody DocumentRequest docRequest){
      String title = docRequest.getTitle();
      String content = docRequest.getContent();
         Document doc = docService.CreateDocument(title,content);
         DocumentResponse response = ConvertToResponse(doc);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        ApiResponse<DocumentResponse> apiResponse =
+                new ApiResponse<>(true, "Document created successfully", response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
     @PutMapping("/edit/{id}")
-    public ResponseEntity<DocumentResponse> updateDocument(@PathVariable  Long id,@Valid  @RequestBody DocumentRequest docRequest){
+    public ResponseEntity<ApiResponse<DocumentResponse>> updateDocument(@PathVariable  Long id,@Valid  @RequestBody DocumentRequest docRequest){
        String content = docRequest.getContent();
         Document doc = docService.updateDocument(id,content);
         DocumentResponse response = ConvertToResponse(doc);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        ApiResponse<DocumentResponse> apiResponse =
+                new ApiResponse<>(true, "Document Updated successfully", response);
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
     @DeleteMapping("/Delete/{id}")
