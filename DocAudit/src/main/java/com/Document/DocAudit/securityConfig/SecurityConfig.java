@@ -18,7 +18,7 @@ public class SecurityConfig {
     private JwtFilter jwtFilter;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, UserOAuthService customOAuth2UserService) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, UserOAuthService customOAuth2UserService) {
         http.csrf(AbstractHttpConfigurer::disable)
                 // Change to STATELESS if you want pure JWT,
                 // but since you use OAuth2 Login, keep it IF_REQUIRED
