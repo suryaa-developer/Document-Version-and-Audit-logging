@@ -6,6 +6,7 @@
     import jakarta.servlet.http.HttpServletResponse;
     import org.jspecify.annotations.NonNull;
     import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.security.authentication.CredentialsExpiredException;
     import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
     import org.springframework.security.core.context.SecurityContextHolder;
     import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -43,6 +44,7 @@
                     System.out.println("User Authenticated in SecurityContext: " + username);
                 } else {
                     System.err.println("JWT Token was invalid or expired");
+                    throw new CredentialsExpiredException("Your session has expired. Please log in again.");
                 }
             }
 
