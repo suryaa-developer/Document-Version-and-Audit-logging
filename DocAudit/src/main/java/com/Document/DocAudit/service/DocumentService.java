@@ -18,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,13 +35,10 @@ public class DocumentService {
        if(currentUser == null){
            throw new IllegalArgumentException("You need to be logged in first");
        }
-       if(title == null  || Content == null || title.isEmpty() || Content.isEmpty()){
-           throw new IllegalArgumentException("Please Enter All Fields");
-       }
 
         // Change findByname to findByEmail
         UserEntity creator = userRepository.findByEmail(currentUser)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + currentUser));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + currentUser));
 
        Document newDoc = new Document();
        newDoc.setTitle(title);
@@ -55,8 +51,6 @@ public class DocumentService {
        documentRepository.save(newDoc);
        return newDoc;
     }
-
-
 
     @Transactional
     public Document updateDocument(Long id, String content) {
