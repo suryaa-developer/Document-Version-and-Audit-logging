@@ -23,4 +23,5 @@ public class AuditLog {
     @Lob
     private String NewContent;
     private LocalDateTime ModifiedAt;
+    private long Version;
 }

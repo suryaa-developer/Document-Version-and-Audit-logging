@@ -22,4 +22,6 @@ public class Document {
     private LocalDateTime CreatedAt;
     private LocalDateTime UpdatedAt;
     private DocumentStatus status;
+    @Column(columnDefinition = "BIGINT DEFAULT 1")
+    private long CurrentVersion;
 }
