@@ -44,7 +44,20 @@
                     System.out.println("User Authenticated in SecurityContext: " + username);
                 } else {
                     System.err.println("JWT Token was invalid or expired");
-                    throw new CredentialsExpiredException("Your session has expired. Please log in again.");
+//                    throw new CredentialsExpiredException("Your session has expired. Please log in again.");
+
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+
+                    response.getWriter().write("""
+        {
+          "success": false,
+          "message": "JWT Token expired or invalid",
+          "data": null
+        }
+        """);
+
+                    return; // 🔥 stop execution
                 }
             }
 
