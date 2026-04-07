@@ -15,4 +15,5 @@ public class DocumentResponse {
     private String CreatedBy;
     private String CreatedByUserId;
     private DocumentStatus Status;
+    private String changeSummary;   
 }
