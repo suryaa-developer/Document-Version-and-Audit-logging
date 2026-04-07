@@ -57,7 +57,6 @@ public class DocumentController {
                 .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-
     private DocumentResponse ConvertToResponse(Document doc){
         return  new DocumentResponse(
                 doc.getId(),
@@ -65,7 +64,8 @@ public class DocumentController {
                 doc.getContent(),
                 doc.getCreatedBy().getName(),
                 doc.getCreatedBy().getUserId().toString(),
-                doc.getStatus()
+                doc.getStatus(),
+                doc.getChangeSummary()
         );
     }
 }
