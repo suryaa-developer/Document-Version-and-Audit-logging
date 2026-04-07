@@ -11,4 +11,6 @@ public class DocumentRequest {
     @NotBlank(message = "Content must not be empty")
     @Size(max = 5000,message = "Content should not exceed 5000 characters")
     private String content;
+    @NotBlank(message = "Please enter changes summary message")
+    private String changeSummary;
 }
