@@ -8,7 +8,6 @@ import com.Document.DocAudit.repository.DocumentRepository;
 import com.Document.DocAudit.repository.UserRepository;
 import com.Document.DocAudit.securityConfig.SecurityConfig;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@Slf4j
 @Service
 public class DocumentService {
     @Autowired
@@ -34,17 +32,13 @@ public class DocumentService {
     @Transactional
     public Document CreateDocument(String title,String Content){
        String currentUser = SecurityConfig.GetCurrentUser();
-       log.info("Attempting to create user : {}", currentUser);
        if(currentUser == null){
-           log.warn("Unauthorised attempt to create document");
            throw new IllegalArgumentException("You need to be logged in first");
        }
 
         // Change findByname to findByEmail
         UserEntity creator = userRepository.findByEmail(currentUser)
-                .orElseThrow(() -> {
-                    log.error("User with email {} not found", currentUser);
-                   return new EntityNotFoundException("User not found with email: " + currentUser);});
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + currentUser));
 
        Document newDoc = new Document();
        newDoc.setTitle(title);
@@ -56,7 +50,6 @@ public class DocumentService {
        newDoc.setCurrentVersion(1);
 
        documentRepository.save(newDoc);
-       log.info("Document created successfully");
        return newDoc;
     }
 
@@ -65,29 +58,37 @@ public class DocumentService {
         // Get current authentication
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            log.warn("Unauthorised attempt to update document");
             throw new AccessDeniedException("You must be logged in to edit a document");
         }
 
         String currentUser = auth.getName();
 
         UserEntity user = userRepository.findByEmail(currentUser)
-                .orElseThrow(() ->{
-                    log.error("User with email {} not found", currentUser);
-                   return new EntityNotFoundException("User not found");});
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         // Load document
         Document doc = documentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Document not found"));
+        if(doc.getStatus() != DocumentStatus.ACTIVE){
+            throw new EntityNotFoundException("Document not Found");
+        }
         long currentVersion = doc.getCurrentVersion()+1;
         String PreviousContent = doc.getContent();
-        if (doc.getCreatedBy().equals(user)) {
-            doc.setContent(content);
-            doc.setUpdatedAt(LocalDateTime.now()); // or use @LastModifiedDate
+        String summary = doc.getChangeSummary();
+        String oldContent = doc.getContent();
 
-            documentRepository.save(doc);
-            auditLogService.CreateDocumentLog(id, DocumentAction.UPDATED,user,PreviousContent,content);
-            return doc;
+        if (doc.getCreatedBy().equals(user)) {
+            if(!content.equals(oldContent)) {
+                doc.setContent(content);
+                doc.setUpdatedAt(LocalDateTime.now()); // or use @LastModifiedDate
+                doc.setCurrentVersion(currentVersion);
+                doc.setChangeSummary(summary);
+                documentRepository.save(doc);
+                auditLogService.CreateDocumentLog(id, DocumentAction.UPDATED, user, PreviousContent, content, currentVersion, summary);
+                return doc;
+            }else{
+                throw new IllegalStateException("Document content is unchanged");
+            }
         } else {
             throw new AccessDeniedException("You don't have permission to edit this document");
         }
@@ -96,13 +97,9 @@ public class DocumentService {
     @Transactional
     public void DeleteDocument(Long id) {
         Document doc = documentRepository.findById(id).
-                orElseThrow(()->{
-                    log.error("Document not found with id {}", id);
-                    return new EntityNotFoundException("Document not found");
-                });
+                orElseThrow(()-> new EntityNotFoundException("Document not found"));
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            log.warn("Unauthorised attempt to delete document");
             throw new AccessDeniedException("You must be logged in to edit a document");
         }
 
@@ -114,9 +111,7 @@ public class DocumentService {
             doc.setStatus(DocumentStatus.DELETED);
             doc.setUpdatedAt(LocalDateTime.now());
             documentRepository.save(doc);
-            log.info("Document deleted successfully");
         }else{
-            log.error("User doesn't have permission to delete this document");
             throw new AccessDeniedException("You don't have permission to delete this document");
         }
     }
