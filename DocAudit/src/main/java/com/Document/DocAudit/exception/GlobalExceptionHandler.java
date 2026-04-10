@@ -66,4 +66,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<Object>> handleIllegalStateException(IllegalStateException e){
+        ApiResponse<Object> response =
+                new ApiResponse<>(false, e.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.NOT_MODIFIED);
+    }
+
 }
