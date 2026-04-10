@@ -13,7 +13,7 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    private Long DocumentId;
+    private Long documentId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private UserEntity ModifiedBy;
@@ -24,4 +24,5 @@ public class AuditLog {
     private String NewContent;
     private LocalDateTime ModifiedAt;
     private long Version;
+    private String changeSummary;
 }

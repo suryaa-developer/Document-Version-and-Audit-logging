@@ -24,4 +24,5 @@ public class Document {
     private DocumentStatus status;
     @Column(columnDefinition = "BIGINT DEFAULT 1")
     private long CurrentVersion;
+    private String changeSummary;
 }
